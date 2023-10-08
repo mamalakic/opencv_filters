@@ -7,8 +7,8 @@
 
 
 ## Current features
-Cycle filters using 0-9 keys
-Debug prints
+- Cycle filters using 0-9 keys
+- Debug prints
 
 
 ## TODO
