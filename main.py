@@ -1,4 +1,6 @@
 import cv2
+import time
+import os
 
 def loadFilter(name):
     global filter,filter_gray, ret, mask, mask_inv
@@ -13,11 +15,15 @@ def loadFilter(name):
 
 def applyFilter():
     # Resize the filter to match the size of the detected face
-    global w,h, prev_y, prev_x
+    global x,y,w,h
     match filterSelection:
         case 0:
             custom_w = int(1.2*w)
             custom_h = int(1*h)
+
+            #hat starts from the forehead (so y+e) and needs to be shifted a bit
+            y = int(1.35*y);            
+            x = int((1-0.1)*x)
 
         case 1:
             custom_w = int(1*w)
@@ -43,8 +49,10 @@ def applyFilter():
         case 1:
             roi = frame[y:y + custom_h, x:x + custom_w]
 
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("roi: ", roi.shape, " mask: ", mask_inv_resized.shape)
     print("x, y, w, h: ", x , " ", y , " ", custom_w, " ", custom_h, "\n")
+    
     # Use the mask to create a masked region
     roi_bg = cv2.bitwise_and(roi, roi, mask=mask_inv_resized)
     roi_fg = cv2.bitwise_and(current_filter, current_filter, mask=mask_resized)
@@ -63,15 +71,16 @@ def applyFilter():
 
 
 # Load the face cascade classifier
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-loadFilter("pirate_hat.png")
+face_cascade = cv2.CascadeClassifier('cascades/haarcascade_frontalface_default.xml')
+# Default filter
+loadFilter("filters/pirate_hat.png")
+
 # TODO: Buffer faces for 5 frames before applying filter (so artifacts are removed)
 # Use epsilon around x,y,w,h values
 
 
 # TODO: Replace numbers with hashmap, same for k
 filterSelection = 0
-prev_y, prev_x = 0
 
 cap = cv2.VideoCapture(0)
 
@@ -86,7 +95,7 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # Detect faces in the frame
-    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+    faces = face_cascade.detectMultiScale(gray, 1.5, 5)
 
     for (x, y, w, h) in faces:
         # Highlight each face
@@ -96,13 +105,15 @@ while True:
         
        # print("x: " , x , " y: " , y , " w: " , w , " h: " , h )
 
+    #time.sleep(0.5)
     # Display the frame with the filter
     cv2.imshow('Filter added', frame)
 
     # Asynchronous button click to cycle through filters
 
     # Check for the 'Esc' key to exit the loop
-    k = cv2.waitKey(30) & 0xff
+    # Polling rate using this
+    k = cv2.waitKey(3) & 0xff
     if (k==0xff):
         k = filterSelection + 48
 
@@ -112,12 +123,12 @@ while True:
         
         case 48:
             filterSelection = k - 48
-            loadFilter("pirate_hat.png")
+            loadFilter("filters/pirate_hat.png")
 
             
         case 49:
             filterSelection = k - 48
-            loadFilter("glasses.png")
+            loadFilter("filters/glasses.png")
 """
 case _:
     filterSelection = k - 48
