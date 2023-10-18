@@ -18,8 +18,10 @@ def applyFilter():
     global x,y,w,h
     match filterSelection:
         case 0:
-            custom_w = int(1.2*w)
-            custom_h = int(1*h)
+            scaling_factor = max(1.0, 3.0/(w*h))
+            custom_w = int(1.2*scaling_factor*w)
+            custom_h = int(1*scaling_factor*h)
+            print(scaling_factor)
 
             #hat starts from the forehead (so y+e) and needs to be shifted a bit
             y = int(1.35*y);            
@@ -36,9 +38,8 @@ def applyFilter():
     # TODO: Crop hat to avoid this check
 
     # Out of bounds
-    if (filterSelection == 0 ):
-        if(y-custom_h<0 or x+custom_h<0): # if you are using video / web cam this condition will take care of your filter not going out of window 
-            return # i.e  your face with filter perfectly fits on window
+    if(y-custom_h<0 or x+custom_h<0): # if you are using video / web cam this condition will take care of your filter not going out of window 
+        return # i.e  your face with filter perfectly fits on window
 
     #TODO: Smoothen filter using epsilon comparing to previous array.
     # Do this before cv calculations so its faster
@@ -49,6 +50,7 @@ def applyFilter():
         case 1:
             roi = frame[y:y + custom_h, x:x + custom_w]
 
+    # debug
     os.system('cls' if os.name == 'nt' else 'clear')
     print("roi: ", roi.shape, " mask: ", mask_inv_resized.shape)
     print("x, y, w, h: ", x , " ", y , " ", custom_w, " ", custom_h, "\n")
@@ -63,7 +65,6 @@ def applyFilter():
     # Replace the ROI in the frame with the combined result
     match filterSelection:
         case 0:
-            #was doing from y to something smaller
             frame[y - custom_h: y, x:x + custom_w] = dst
 
         case 1:
@@ -103,21 +104,17 @@ while True:
 
         applyFilter()
         
-       # print("x: " , x , " y: " , y , " w: " , w , " h: " , h )
-
     #time.sleep(0.5)
     # Display the frame with the filter
     cv2.imshow('Filter added', frame)
 
     # Asynchronous button click to cycle through filters
-
-    # Check for the 'Esc' key to exit the loop
-    # Polling rate using this
     k = cv2.waitKey(3) & 0xff
     if (k==0xff):
         k = filterSelection + 48
 
     match k:
+        # Check for the 'Esc' key to exit the loop
         case 27:
             break
         
@@ -129,12 +126,6 @@ while True:
         case 49:
             filterSelection = k - 48
             loadFilter("filters/glasses.png")
-"""
-case _:
-    filterSelection = k - 48
-    #print(k, " ", filterSelection)
-"""
-    
 
 # Release the video capture and close all OpenCV windows
 cap.release()
