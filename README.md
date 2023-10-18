@@ -1,5 +1,5 @@
 # Filters using computer vision
-
+This is a project for ACM's workshop
 
 ### Notes 
 - Dark png's tend to mess up the masking so they are avoided.
@@ -13,7 +13,7 @@
 
 ## TODO
 - EMA smoothing for less twitchy filter application
-- Fix hat filters. They are generally out of the detected face coords.
 - Fix out of bound errors
 - More scalable code (have to add case for each new png)
-
+- ~~Fix hat filters. They are generally out of the detected face coords.~~
+- Program is very prone to curvature. A camera tilt can make the filter look bad. I'm not aware how I can fix lens distortion.
