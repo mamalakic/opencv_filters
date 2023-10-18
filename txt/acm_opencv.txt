@@ -1,0 +1,11 @@
+Haar Features for Face Detection:
+
+Edges, Corners: computed with derivatives etc. (Shmata 2)
+
+Load filter. Resize filter. Using gray scale, make filter transparent (play around with threshold)
+Find face(s). Get coordinates of face(s).
+We need a filter for each face . 
+
+Dictate ROI for filter placement (depends on the type of filter)
+
+Program is very prone to curvature
