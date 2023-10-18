@@ -13,7 +13,11 @@ This is a project for ACM's workshop
 
 ## TODO
 - EMA smoothing for less twitchy filter application
-- Fix out of bound errors
 - More scalable code (have to add case for each new png)
 - ~~Fix hat filters. They are generally out of the detected face coords.~~
+
+
+## Bugs
 - Program is very prone to curvature. A camera tilt can make the filter look bad. I'm not aware how I can fix lens distortion.
+- Fix out of bound errors
+- If the user is too far away, scaling factor will be too much and mess up filter positioning
