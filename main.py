@@ -12,19 +12,32 @@ def loadFilter(name):
     ret, mask = cv2.threshold(filter_gray, 10, 255, cv2.THRESH_BINARY)
     mask_inv = cv2.bitwise_not(mask)
 
-def applyFilter():
+def applyFilter(cam_res, x, y, w, h):
+
+
+    # w/h
+    cam_scale = int(cam_res[0]/cam_res[1])
+
+    scaling_factor = max(cam_scale, int(3.0/(w*h)))
+    scaling_factor = 1.0
     # Resize the filter to match the size of the detected face
-    global x,y,w,h
     match filterSelection:
         case 0:
-            scaling_factor = max(1.0, 3.0/(w*h))
-            custom_w = int(1.2*scaling_factor*w)
+            """
+            Thought process:
+            Empirically find ratio w/h that works perfectly
+            Hardcode it and then compare every time.
+            Have to compare it to camera size.
+            TODO: Add it as argument
+            Can add a waitkey to track optimal scaling factor
+            to call this func
+            """
+            custom_w = int(1.45*scaling_factor*w)
             custom_h = int(1*scaling_factor*h)
-            print(scaling_factor)
 
             #hat starts from the forehead (so y+e) and needs to be shifted a bit
             y = int(1.35*y)
-            x = int((1-0.1)*x)
+            x = int((1-0.2)*x)
 
         case 1:
             custom_w = int(1*w)
@@ -88,10 +101,16 @@ loadFilter("filters/pirate_hat.png")
 filterSelection = 0
 
 cap = cv2.VideoCapture(0)
+cam_res = [480, 640]
+
+#sample a frame to get cam_res
+ret, frame = cap.read()
+cam_res = frame.shape[0:2]
 
 while True:
     # Read a frame from the video capture
     ret, frame = cap.read()
+    print(frame.shape)
 
     if not ret:
         break
@@ -109,7 +128,7 @@ while True:
         # Highlight each face
         rect = cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0,0), 1)
 
-        applyFilter()
+        applyFilter(cam_res, x, y, w, h)
 
     #time.sleep(0.5)
     # Display the frame with the filter
