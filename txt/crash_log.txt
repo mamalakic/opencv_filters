@@ -1,0 +1,34 @@
+sudden error:
+    roi_bg = cv2.bitwise_and(roi, roi, mask=mask_inv_resized)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cv2.error: OpenCV(4.8.1) D:\a\opencv-python\opencv-python\opencv\modules\core\src\arithm.cpp:230: error: (-215:Assertion failed) (mtype == CV_8U || mtype == CV_8S) && _mask.sameSize(*psrc1) in function 'cv::binary_op'
+
+roi:  (58, 67, 3)  mask:  (58, 69)
+x, y, w, h:  573   416   69   58
+
+roi:  (188, 213, 3)  mask:  (188, 225)
+x, y, w, h:  427   191   225   188
+
+roi:  (46, 64, 3)  mask:  (54, 64)
+x, y, w, h:  306   488   64   54
+
+roi:  (35, 64, 3)  mask:  (54, 64)
+x, y, w, h:  309   499   64   54 
+
+roi:  (80, 97, 3)  mask:  (81, 97)
+x, y, w, h:  459   481   97   81
+bottom right corner
+
+roi:  (53, 64, 3)  mask:  (54, 64) 
+x, y, w, h:  275   481   64   54  
+bottom middle
+=> Happens at the bottom for some reason
+
+roi:  (121, 146, 3)  mask:  (122, 146)
+x, y, w, h:  252   481   146   122
+
+roi:  (121, 146, 3)  mask:  (122, 146)
+x, y, w, h:  256   481   146   122
+
+When roi is not equal to mask, crash happens.
+Bandaid fix : When not equal, pass
