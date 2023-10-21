@@ -1,6 +1,5 @@
-import cv2
-import time
 import os
+import cv2
 
 def loadFilter(name):
     global filter,filter_gray, ret, mask, mask_inv
@@ -24,12 +23,13 @@ def applyFilter():
             print(scaling_factor)
 
             #hat starts from the forehead (so y+e) and needs to be shifted a bit
-            y = int(1.35*y);            
+            y = int(1.35*y)
             x = int((1-0.1)*x)
 
         case 1:
             custom_w = int(1*w)
             custom_h = int(0.9*h)
+
     current_filter = cv2.resize(filter, (custom_w, custom_h), interpolation=cv2.INTER_AREA)
     mask_resized = cv2.resize(mask, (custom_w, custom_h), interpolation=cv2.INTER_AREA)
     mask_inv_resized = cv2.resize(mask_inv, (custom_w, custom_h), interpolation=cv2.INTER_AREA)
@@ -54,7 +54,7 @@ def applyFilter():
     os.system('cls' if os.name == 'nt' else 'clear')
     print("roi: ", roi.shape, " mask: ", mask_inv_resized.shape)
     print("x, y, w, h: ", x , " ", y , " ", custom_w, " ", custom_h, "\n")
-    
+
     # Use the mask to create a masked region
     roi_bg = cv2.bitwise_and(roi, roi, mask=mask_inv_resized)
     roi_fg = cv2.bitwise_and(current_filter, current_filter, mask=mask_resized)
@@ -103,26 +103,26 @@ while True:
         rect = cv2.rectangle(frame, (x,y), (x+w, y+h), (255,0,0), 1)
 
         applyFilter()
-        
+
     #time.sleep(0.5)
     # Display the frame with the filter
     cv2.imshow('Filter added', frame)
 
     # Asynchronous button click to cycle through filters
     k = cv2.waitKey(3) & 0xff
-    if (k==0xff):
+    if k==0xff:
         k = filterSelection + 48
 
     match k:
         # Check for the 'Esc' key to exit the loop
         case 27:
             break
-        
+
         case 48:
             filterSelection = k - 48
             loadFilter("filters/pirate_hat.png")
 
-            
+
         case 49:
             filterSelection = k - 48
             loadFilter("filters/glasses.png")
