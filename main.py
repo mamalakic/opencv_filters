@@ -38,7 +38,7 @@ def applyFilter():
     # TODO: Crop hat to avoid this check
 
     # Out of bounds
-    if(y-custom_h<0 or x+custom_h<0): # if you are using video / web cam this condition will take care of your filter not going out of window 
+    if (y-custom_h<0 or x+custom_h<0): # if you are using video / web cam this condition will take care of your filter not going out of window 
         return # i.e  your face with filter perfectly fits on window
 
     #TODO: Smoothen filter using epsilon comparing to previous array.
@@ -54,6 +54,10 @@ def applyFilter():
     os.system('cls' if os.name == 'nt' else 'clear')
     print("roi: ", roi.shape, " mask: ", mask_inv_resized.shape)
     print("x, y, w, h: ", x , " ", y , " ", custom_w, " ", custom_h, "\n")
+
+    # All rows, and col0 till col1
+    if roi.shape[0:2] != mask_inv_resized.shape:
+        return
 
     # Use the mask to create a masked region
     roi_bg = cv2.bitwise_and(roi, roi, mask=mask_inv_resized)
@@ -97,6 +101,9 @@ while True:
 
     # Detect faces in the frame
     faces = face_cascade.detectMultiScale(gray, 1.5, 5)
+    # https://stackoverflow.com/questions/52318311/merging-overlapping-rectangle-with-opencv
+    # Group overlapping rectangles together
+    faces, _ = cv2.groupRectangles(faces,0,0.5)
 
     for (x, y, w, h) in faces:
         # Highlight each face
